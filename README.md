@@ -1,4 +1,4 @@
-# dotfiles
+# Dotfiles
 
 Central place to manage my dotfiles.
 
@@ -20,55 +20,62 @@ Either use `JetBrainsMono` located in `fonts` or browse others [here](https://gi
 ## Usage
 
 1. Create backups of existing configs if needed
+```sh
+# backup existing installation & remove existing nvim data
+mv ~/.config/nvim ~/.config/nvim.bak
+rm -rf ~/.local/share/nvim
 
-       # backup existing installation & remove existing nvim data
-       mv ~/.config/nvim ~/.config/nvim.bak
-       rm -rf ~/.local/share/nvim
+# backup existing fish config
+mv ~/.config/fish/config.fish{,.bak}
+```
 
-       # backup existing fish config
-       mv ~/.config/fish/config.fish{,.bak}
+3. Clone the repo & create alias to interact with it
 
-2. Clone the repo & create alias to interact with it
+```sh
+git clone --bare https://github.com/elsesiy/dotfiles.git $HOME/.local/share/dotfiles
+alias dgit='git --git-dir=$HOME/.local/share/dotfiles/ --work-tree=$HOME'
+dgit status
 
-       git clone --bare https://github.com/elsesiy/dotfiles.git $HOME/.local/share/dotfiles
-       alias dgit='git --git-dir=$HOME/.local/share/dotfiles/ --work-tree=$HOME'
-       dgit status
+# restore missing files in homedir, make sure to backup local changes first if there are any conflicts i.e. modified instead of deleted files
 
-       # restore missing files in homedir, make sure to backup local changes first if there are any conflicts i.e. modified instead of deleted files
-       dgit reset && dgit restore .
+dgit reset && dgit restore .
 
-       # (optional) update repo for ssh cloning
-       dgit remote set-url origin git@github.com:elsesiy/dotfiles.git
+# (OPTIONAL) update repo for SSH cloning
+dgit remote set-url origin git@github.com:elsesiy/dotfiles.git
+```
 
-3. Install packages via [Nix](#Nix)
+4. Install packages via [Nix](#Nix)
 
-4. Misc configuration
+5. Misc configuration
 
-       # set fish as default shell
-       chsh -s /run/current-system/sw/bin/fish $(whoami)
+```sh
+# set fish as default shell
+chsh -s /run/current-system/sw/bin/fish $(whoami)
 
-       # rebuild bat cache
-       bat cache --build
+# rebuild bat cache
+bat cache --build
 
-       # install fish plugins
-       fisher update
+# install fish plugins
+fisher update
 
-       # update ~/.gitconfig
-       cat <<EOF >> ~/.gitconfig
+# update ~/.gitconfig
+cat <<EOF >> ~/.gitconfig
        [include]
           path = ~/.config/delta/delta.gitconfig
        [include]
           path = ~/.config/git/common.gitconfig
-       EOF
+EOF
+```
 
-5. Start `nvim` and run `:MasonInstallAll`
+6. Start `nvim` and run `:MasonInstallAll`
 
 ### Nix
 Supported systems: `["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"]`
 
 All required system configuration and packages utilize nix flakes (unstable nix pkgs) with home-manager.
 Depending on the target system, invocation will be different:
-```
+
+```sh
 # nix-darwin (mac)
 sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/nix-modules/#personal
 
@@ -79,11 +86,11 @@ sudo nix run home-manager/master --extra-experimental-features "nix-command flak
 Things you'd likely want to do periodically:
 
 - Update flakes
-```
+```sh
 nix flake update
 ```
 
 - Cleanup old derivations
-```
+```sh
 nix-collect-garbage -d
 ```
